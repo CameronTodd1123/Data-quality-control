@@ -94,11 +94,11 @@ def check_instagram_lag_test(venue_id):
         return False
 
 def check_twitter_lag_test(venue_id):
-    psql = """SELECT twitterfollowers, date 
-                    FROM analytics 
-                    WHERE venue_id = {}
-                    ORDER BY date DESC 
-                    LIMIT 1""".format(venue_id)
+    psql = """SELECT followers, record_date 
+                        FROM social_media_followers 
+                        WHERE venue_id = {} AND platform = 'Twitter'
+                        ORDER BY record_date DESC 
+                        LIMIT 1""".format(venue_id)
     venue_twitter_data = clientdata._get_db_data(psql)
     if check_lag(venue_twitter_data, twitter_lag) == True:
         return True
