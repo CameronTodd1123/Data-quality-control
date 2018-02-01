@@ -67,10 +67,10 @@ def check_instagram_data(venue_id,days):
 
 
 def check_twitter_data(venue_id,days):
-    psql = """SELECT twitterfollowers, date 
-                        FROM analytics 
-                        WHERE venue_id = {} 
-                        ORDER BY date DESC 
+    psql = """SELECT followers, record_date 
+                        FROM social_media_followers 
+                        WHERE venue_id = {} AND platform = 'Twitter'
+                        ORDER BY record_date DESC 
                         LIMIT {}""".format(venue_id,days)
     venue_twitter_data = clientdata._get_db_data(psql)
     twitter_date_gaps = check_missing_day_data_gap(venue_twitter_data, days)
