@@ -18,27 +18,27 @@ def check_lags_per_client(venue_id, client_integrations):
 
         if integration == 'facebook':
             if check_facebook_followers_lag_test(venue_id) == True:
-                venue_lags.append('facebook followers lag')
+                venue_lags.append('facebook followers')
             if check_facebook_engagement_impressions_lag_test(venue_id) == True:
-                venue_lags.append('facebook engagement-impressions lag')
+                venue_lags.append('facebook engagement-impressions')
             if check_facebook_reactions_lag_test(venue_id) == True:
-                venue_lags.append('facebook reactions lag')
+                venue_lags.append('facebook reactions')
 
         elif integration == 'instagram':
             if check_instagram_lag_test(venue_id) == True:
-                venue_lags.append('instagram lag')
+                venue_lags.append('instagram')
         elif integration == 'twitter':
             if check_twitter_lag_test(venue_id) == True:
-                venue_lags.append('twitter lag')
+                venue_lags.append('twitter')
         elif integration == 'google_analytics':
             if check_google_analytics_lag_test(venue_id) == True:
-                venue_lags.append('google analytics lag')
+                venue_lags.append('google analytics')
         elif integration == 'presence':
             if check_presence_lag_test(venue_id) == True:
-                venue_lags.append('presence lag')
+                venue_lags.append('presence')
         elif integration == 'weather':
             if check_weather_lag_test(venue_id) == True:
-                venue_lags.append('weather lag')
+                venue_lags.append('weather')
 
     return venue_lags
 
