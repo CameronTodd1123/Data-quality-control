@@ -22,7 +22,7 @@ def _get_db_data(psql_string):
 
 
 def get_dexibit_cust_info():  # Getting client id's and names from the venue table in test for now
-    real_client_list_and_integrations = {#'Antarctica Museum':['google_analytics', 'twitter', 'facebook']}
+    real_client_list_and_integrations = {'Antarctica Museum':['google_analytics', 'twitter', 'facebook','instagram'],
                         'Auckland Museum':['facebook','instagram','twitter','google_analytics','weather','presence'],
                         'Arizona Science Center':['facebook','instagram','twitter','google_analytics'],
                         'Kauri Museum':['facebook','twitter'],
