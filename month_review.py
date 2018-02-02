@@ -1,4 +1,5 @@
 import clientdata
+import datalags
 from datetime import datetime, timedelta
 import numpy as np
 import pandas as pd
@@ -6,7 +7,6 @@ import pandas as pd
 #This file will hold all functions similar to datalags but will check 40 days worth of data and be checking for data gaps
 #and outliers. Will have to look at some statistical packages that are already built to spot outliers in timeseries
 #Also import and use Jupyter package like R to review data easier (Nani uses it)
-#TODO change all += of lists to .append()
 
 def check_month_data_gaps_per_client(venue_id, client_integrations):
     month_data_gaps = []
@@ -45,7 +45,7 @@ def check_facebook_data(venue_id,days):
                         ORDER BY record_date DESC 
                         LIMIT {}""".format(venue_id,days)
     venue_fb_data = clientdata._get_db_data(psql)
-    facebook_date_gaps = check_missing_day_data_gap(venue_fb_data, days)
+    facebook_date_gaps = check_missing_day_data_gap(venue_fb_data, days,datalags.facebook_lag)
     if facebook_date_gaps == None:
         return None
     else:
@@ -59,7 +59,7 @@ def check_instagram_data(venue_id,days):
                         ORDER BY record_date DESC 
                         LIMIT {}""".format(venue_id,days)
     venue_instagram_data = clientdata._get_db_data(psql)
-    instagram_date_gaps = check_missing_day_data_gap(venue_instagram_data, days)
+    instagram_date_gaps = check_missing_day_data_gap(venue_instagram_data, days,datalags.instagram_lag)
     if instagram_date_gaps == None:
         return None
     else:
@@ -73,7 +73,7 @@ def check_twitter_data(venue_id,days):
                         ORDER BY record_date DESC 
                         LIMIT {}""".format(venue_id,days)
     venue_twitter_data = clientdata._get_db_data(psql)
-    twitter_date_gaps = check_missing_day_data_gap(venue_twitter_data, days)
+    twitter_date_gaps = check_missing_day_data_gap(venue_twitter_data, days,datalags.facebook_lag)
     if twitter_date_gaps == None:
         return None
     else:
@@ -86,7 +86,7 @@ def check_google_analytics_data(venue_id,days):
                         ORDER BY record_date DESC 
                         LIMIT {}""".format(venue_id,days)
     venue_ga_data = clientdata._get_db_data(psql)
-    ga_date_gaps = check_missing_day_data_gap(venue_ga_data, days)
+    ga_date_gaps = check_missing_day_data_gap(venue_ga_data, days,datalags.google_analytics_lag)
     if ga_date_gaps == None:
         return None
     else:
@@ -96,34 +96,46 @@ def check_google_analytics_data(venue_id,days):
 
 
 
-def check_missing_day_data_gap(venue_data, days_to_test):
+def check_missing_day_data_gap(venue_data, days_to_test,lag):
     data_gaps_dates = []
     if len(venue_data) == 0:
         data_gaps_dates.append('No Integration')
         return data_gaps_dates
 
-    expected_day = venue_data[0][1].date()
-    last_day_to_test = venue_data[0][1] - timedelta(days=days_to_test)
+    present_date = datetime.now().date()
+    expected_day = max(present_date - timedelta(days=lag),venue_data[0][1].date())
+    last_day_to_test = max(present_date - timedelta(days=lag) - timedelta(days=days_to_test),
+                           venue_data[0][1].date() - timedelta(days=days_to_test))
 
-    for actual_day in venue_data:
-        if actual_day[0] == None:
-            data_gaps_dates.append(str(expected_day))
+    if venue_data[0][1].date() < last_day_to_test:
+        data_gaps_dates.append('No relevant data')
 
-        if actual_day[1].date() != expected_day:
-            while actual_day[1].date() != expected_day:
+    else:
+        for actual_day in venue_data:
+            value = actual_day[0]
+            date_object = actual_day[1]
+            if date_object.date() < last_day_to_test:
+                break
+
+            if value == None:
                 data_gaps_dates.append(str(expected_day))
-                expected_day = expected_day - timedelta(days=1)
-                if expected_day < last_day_to_test.date():
-                    break
-            expected_day = expected_day - timedelta(days=1)
-        else:
-            expected_day = expected_day - timedelta(days=1)
 
+            if date_object.date() != expected_day:
+                while date_object.date() != expected_day:
+                    data_gaps_dates.append(str(expected_day))
+                    expected_day = expected_day - timedelta(days=1)
+                    if expected_day < last_day_to_test:
+                        break
+                expected_day = expected_day - timedelta(days=1)
+            else:
+                expected_day = expected_day - timedelta(days=1)
 
     if len(data_gaps_dates) == 0:
         return None
     else:
         return data_gaps_dates
+
+
 
 def check_data_for_outliers(venue_data, sample_size):
     #We could use cooks distance, empirical rule: cooks distance > 4*mean(vector of all cooks distance) may be considered influential.'
