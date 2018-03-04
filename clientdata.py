@@ -2,11 +2,11 @@ import psycopg2
 
 
 def _get_db_connection_string():
-    dbname = 'dexibit'
-    user = 'readme'
-    host = 'dexibit-production.chhletjaa2dx.us-west-2.rds.amazonaws.com'
-    password = '98#fqm@DEX'
-    port = '5432'
+    dbname = '#####'
+    user = '###'
+    host = '#####'
+    password = '####'
+    port = '###'
     connection_string = "host={} port={} dbname={} user={} password={}".format(host, port, dbname, user, password)
     return connection_string
 

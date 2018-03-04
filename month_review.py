@@ -10,7 +10,7 @@ import pandas as pd
 
 def check_month_data_gaps_per_client(venue_id, client_integrations):
     month_data_gaps = []
-    days_to_test = 40
+    days_to_test = 90
     #venue_id = 8053450 #This is Antarctica test account with patchy data
     for integration in client_integrations:
 

@@ -8,7 +8,7 @@ instagram_lag = 2
 twitter_lag = 2
 google_analytics_lag = 4
 presence_lag_time = 2
-weather_lag = 1
+weather_lag = 2
 
 
 
